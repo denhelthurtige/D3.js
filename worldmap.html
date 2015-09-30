@@ -41,20 +41,12 @@ body {
 <script>
 
 var width = 960,
-    height = 530;
+    height = 520;
 
-var projection = d3.geo.interrupt(d3.geo.sinuMollweide.raw)
-    .lobes([[ // northern hemisphere
-      [[-180,  35], [ -30,  90], [   0,  35]],
-      [[   0,  35], [  30,  90], [ 180,  35]]
-    ], [ // southern hemisphere
-      [[-180, -10], [-102, -90], [ -65, -10]],
-      [[ -65, -10], [   5, -90], [  77, -10]],
-      [[  77, -10], [ 103, -90], [ 180, -10]]
-    ]])
-    .rotate([-20, -55])
+var projection = d3.geo.sinuMollweide()
+    .center([0, -5])
     .scale(165)
-    .translate([width / 2, height / 2 - 16])
+    .translate([width / 2, height / 2])
     .precision(.1);
 
 var path = d3.geo.path()
@@ -66,17 +58,10 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var defs = svg.append("defs");
-
-defs.append("path")
+svg.append("defs").append("path")
     .datum({type: "Sphere"})
     .attr("id", "sphere")
     .attr("d", path);
-
-defs.append("clipPath")
-    .attr("id", "clip")
-  .append("use")
-    .attr("xlink:href", "#sphere");
 
 svg.append("use")
     .attr("class", "stroke")
@@ -89,7 +74,6 @@ svg.append("use")
 svg.append("path")
     .datum(graticule)
     .attr("class", "graticule")
-    .attr("clip-path", "url(#clip)")
     .attr("d", path);
 
 d3.json("/mbostock/raw/4090846/world-50m.json", function(error, world) {
@@ -98,13 +82,11 @@ d3.json("/mbostock/raw/4090846/world-50m.json", function(error, world) {
   svg.insert("path", ".graticule")
       .datum(topojson.feature(world, world.objects.land))
       .attr("class", "land")
-      .attr("clip-path", "url(#clip)")
       .attr("d", path);
 
   svg.insert("path", ".graticule")
       .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
       .attr("class", "boundary")
-      .attr("clip-path", "url(#clip)")
       .attr("d", path);
 });
 
