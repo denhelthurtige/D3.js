@@ -82,7 +82,7 @@ function position() {
 }
 
 </script>
-flare.json#
+#flare.json
 
 {
  "name": "flare",
